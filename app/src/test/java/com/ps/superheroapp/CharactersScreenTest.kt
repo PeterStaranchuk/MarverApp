@@ -15,7 +15,7 @@ class CharactersScreenTest {
     }
 
     @Test
-    fun should_show_general_error_when_screen_data_cannot_be_loaded_because_of_internet_connection() {
+    fun should_show_general_error_when_screen_data_cannot_be_loaded_because_of_unknown_error() {
 
     }
 
