@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 28
@@ -14,6 +13,9 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "API_KEY", API_KEY)
+        dataBinding {
+            enabled = true
+        }
     }
     buildTypes {
         release {
@@ -32,4 +34,36 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    //Rx
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+
+    //Retrofit 2
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
+
+    //Epoxy (Reduce recycler view boilerplate)
+    implementation 'com.airbnb.android:epoxy-databinding:3.3.0'
+    implementation 'com.airbnb.android:epoxy:3.3.0'
+
+    //Picasso 2 (Image download)
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    //Dagger 2 (Dependency injection)
+    implementation 'com.google.dagger:dagger:2.21'
+    implementation 'com.google.dagger:dagger-android:2.21'
+    implementation 'com.google.dagger:dagger-android-support:2.21'
+    kapt "com.google.dagger:dagger-compiler:2.21"
+    kapt "com.google.dagger:dagger-android-processor:2.21"
+
+    // Navigation (To build a navigation graph)
+    implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0'
+    implementation "android.arch.navigation:navigation-ui-ktx:1.0.0"
+
+    //Mockito (Unit tests)
+    testImplementation 'org.mockito:mockito-core:2.25.1'
+    androidTestImplementation 'org.mockito:mockito-android:2.6.3'
 }
