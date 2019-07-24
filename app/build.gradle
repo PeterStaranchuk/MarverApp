@@ -35,6 +35,10 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
+    //View models
+    implementation "android.arch.lifecycle:viewmodel:1.1.1"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+
     //Rx
     implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
