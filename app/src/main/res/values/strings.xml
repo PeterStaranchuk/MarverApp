@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SuperHeroApp</string>
+    <string name="characters_screen_toolbar_title">Characters list</string>
+    <string name="characters_screen_search_hint">Enter character name</string>
 </resources>
