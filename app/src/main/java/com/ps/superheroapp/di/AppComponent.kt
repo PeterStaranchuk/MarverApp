@@ -1,13 +1,16 @@
 package com.ps.superheroapp.di
 
 import android.app.Application
+import com.ps.superheroapp.SuperHeroApplication
+import com.ps.superheroapp.di.modules.PicassoModule
 import com.ps.superheroapp.ui.character_screen.CharacterSubcomponent
 import com.ps.superheroapp.ui.character_screen.CharactersModule
 import dagger.BindsInstance
 import dagger.Component
+import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton
 
-@Component(modules = [CharactersModule::class])
+@Component(modules = [AndroidInjectionModule::class, CharactersModule::class, PicassoModule::class])
 @Singleton
 interface AppComponent {
 
@@ -19,5 +22,6 @@ interface AppComponent {
         fun build(): AppComponent
     }
 
+    fun inject(app: SuperHeroApplication)
     fun characterSubcomponent(): CharacterSubcomponent.Builder
 }
