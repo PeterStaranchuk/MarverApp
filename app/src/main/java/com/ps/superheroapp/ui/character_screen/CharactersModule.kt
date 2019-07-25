@@ -1,20 +1,24 @@
 package com.ps.superheroapp.ui.character_screen
 
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.aximetria.aximetria.di.view_model.DaggerViewModelFactory
+import com.aximetria.aximetria.di.view_model.ViewModelKeyAnnotation
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
+import dagger.multibindings.IntoMap
 
 @Module
-class CharactersModule {
+abstract class CharactersModule {
 
-    @Provides
-    fun productViewModel(fragment: CharactersFragment): CharactersViewModel {
-        return ViewModelProviders.of(fragment).get(CharactersViewModel::class.java)
-    }
+    @Binds
+    @IntoMap
+    @ViewModelKeyAnnotation.ViewModelKey(CharactersViewModel::class)
+    abstract fun provideViewModel(charactersViewModel: CharactersViewModel): ViewModel
 
-    @Provides
-    fun characterInteractor() : CharactersInteractorImpl {
-        return CharactersInteractorImpl()
-    }
+    @Binds
+    abstract fun provideFactory(kotlinViewModelFactory: DaggerViewModelFactory): ViewModelProvider.Factory
 
+    @Binds
+    abstract fun provideInteractor(kotlinViewModelFactory: CharactersInteractorImpl): CharactersContract.Interactor
 }
