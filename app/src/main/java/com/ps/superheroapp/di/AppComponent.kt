@@ -2,6 +2,8 @@ package com.ps.superheroapp.di
 
 import android.app.Application
 import com.ps.superheroapp.SuperHeroApplication
+import com.ps.superheroapp.di.modules.AppModule
+import com.ps.superheroapp.di.modules.ConnectivityModule
 import com.ps.superheroapp.di.modules.PicassoModule
 import com.ps.superheroapp.di.modules.SchedulersModule
 import com.ps.superheroapp.ui.character_screen.CharacterSubcomponent
@@ -13,10 +15,12 @@ import javax.inject.Singleton
 
 @Component(
     modules = [
+        AppModule::class,
         AndroidInjectionModule::class,
         CharactersModule::class,
         PicassoModule::class,
-        SchedulersModule::class]
+        SchedulersModule::class,
+        ConnectivityModule::class]
 )
 @Singleton
 interface AppComponent {
