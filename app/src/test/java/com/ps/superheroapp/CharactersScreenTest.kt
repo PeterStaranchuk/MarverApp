@@ -1,12 +1,60 @@
 package com.ps.superheroapp
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.ps.superheroapp.ui.character_screen.CharactersInteractorImpl
+import com.ps.superheroapp.ui.character_screen.CharactersViewModel
+import com.ps.superheroapp.ui.character_screen.list.*
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
 
 class CharactersScreenTest {
 
+    @get:Rule
+    var rule: TestRule = InstantTaskExecutorRule()
+
+    @Mock
+    lateinit var interactor: CharactersInteractorImpl
+
+    lateinit var vm: CharactersViewModel
+
+    @Before
+    fun before() {
+        MockitoAnnotations.initMocks(this)
+        vm = CharactersViewModel(interactor, Schedulers.computation())
+    }
+
     @Test
     fun should_show_list_of_characters_when_screen_started() {
+        `when`(interactor.getCharacters()).thenReturn(
+            Observable.just(
+                arrayOf(
+                    Character(
+                        Image(""),
+                        Appearance(),
+                        Work(),
+                        "Spider Man",
+                        Powerstats(),
+                        "id1",
+                        Biography(),
+                        Connections()
+                    ),
+                    Character(Image(""), Appearance(), Work(), "Tor", Powerstats(), "id2", Biography(), Connections()),
+                    Character(Image(""), Appearance(), Work(), "Hulk", Powerstats(), "id3", Biography(), Connections())
+                )
+            )
+        )
 
+        vm.fetchCharacters()
+
+        Assert.assertEquals(3, vm.characters.value?.size)
     }
 
     @Test
