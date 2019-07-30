@@ -1,6 +1,8 @@
 package com.ps.superheroapp
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.ps.superheroapp.objects.ConnectivityCheckerImpl
+import com.ps.superheroapp.objects.ErrorType
 import com.ps.superheroapp.ui.character_screen.CharactersInteractorImpl
 import com.ps.superheroapp.ui.character_screen.CharactersViewModel
 import com.ps.superheroapp.ui.character_screen.list.*
@@ -23,12 +25,15 @@ class CharactersScreenTest {
     @Mock
     lateinit var interactor: CharactersInteractorImpl
 
+    @Mock
+    lateinit var connectivityChecker: ConnectivityCheckerImpl
+
     lateinit var vm: CharactersViewModel
 
     @Before
     fun before() {
         MockitoAnnotations.initMocks(this)
-        vm = CharactersViewModel(interactor, Schedulers.computation())
+        vm = CharactersViewModel(interactor, Schedulers.computation(), connectivityChecker)
     }
 
     @Test
@@ -59,17 +64,27 @@ class CharactersScreenTest {
 
     @Test
     fun should_show_network_error_when_screen_data_cannot_be_loaded_because_of_internet_connection() {
+        `when`(connectivityChecker.isOffline()).thenReturn(true)
+        `when`(interactor.getCharacters()).thenReturn(Observable.error(Throwable()))
 
+        vm.fetchCharacters()
+        Assert.assertEquals(ErrorType.NETWORK, vm.error.get())
     }
 
     @Test
     fun should_show_general_error_when_screen_data_cannot_be_loaded_because_of_unknown_error() {
+        `when`(connectivityChecker.isOffline()).thenReturn(false)
+        `when`(interactor.getCharacters()).thenReturn(Observable.error(Throwable()))
 
+        vm.fetchCharacters()
+        Assert.assertEquals(ErrorType.GENERAL, vm.error.get())
     }
 
     @Test
     fun should_filter_character_list_when_user_enter_text_in_search_field() {
+        vm.filterCharacters("Hulk")
 
+        Assert.assertEquals("Hulk", vm.filter.value)
     }
 
     @Test
