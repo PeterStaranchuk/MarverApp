@@ -16,6 +16,7 @@ import org.junit.rules.TestRule
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import java.util.concurrent.TimeUnit
 
 class CharactersScreenTest {
 
@@ -33,7 +34,7 @@ class CharactersScreenTest {
     @Before
     fun before() {
         MockitoAnnotations.initMocks(this)
-        vm = CharactersViewModel(interactor, Schedulers.computation(), connectivityChecker)
+        vm = CharactersViewModel(interactor, Schedulers.trampoline(), connectivityChecker)
     }
 
     @Test
@@ -100,7 +101,7 @@ class CharactersScreenTest {
                     Character(name = "Hulk", id = "id2"),
                     Character(name = "Tor", id = "id3")
                 )
-            )
+            ).delay(10, TimeUnit.SECONDS)
         )
         vm.fetchCharacters()
         Assert.assertEquals(vm.loaderVisibility.get(), ViewVisibility.VISIBLE)
@@ -126,4 +127,33 @@ class CharactersScreenTest {
         Assert.assertEquals(vm.loaderVisibility.get(), ViewVisibility.GONE)
     }
 
+    @Test
+    fun should_hide_progress_when_character_data_loaded() {
+        `when`(interactor.getCharacters()).thenReturn(
+            Observable.just(
+                arrayOf(
+                    Character(name = "SpiderMan", id = "id1"),
+                    Character(name = "Hulk", id = "id2"),
+                    Character(name = "Tor", id = "id3")
+                )
+            )
+        )
+        vm.fetchCharacters()
+        Assert.assertEquals(vm.loaderVisibility.get(), ViewVisibility.GONE)
+    }
+
+    @Test
+    fun should_hide_error_when_loading_started() {
+        `when`(interactor.getCharacters()).thenReturn(
+            Observable.just(
+                arrayOf(
+                    Character(name = "SpiderMan", id = "id1"),
+                    Character(name = "Hulk", id = "id2"),
+                    Character(name = "Tor", id = "id3")
+                )
+            )
+        )
+        vm.fetchCharacters()
+        Assert.assertEquals(vm.error.get(), null)
+    }
 }
