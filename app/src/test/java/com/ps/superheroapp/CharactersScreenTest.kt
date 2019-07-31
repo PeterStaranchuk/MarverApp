@@ -51,7 +51,7 @@ class CharactersScreenTest {
 
         vm.fetchCharacters()
 
-        Assert.assertEquals(3, vm.characters.value?.size)
+        Assert.assertEquals(3, vm.onCharactersLoaded().value?.size)
     }
 
     @Test
@@ -76,13 +76,13 @@ class CharactersScreenTest {
     fun should_filter_character_list_when_user_enter_text_in_search_field() {
         vm.filterCharacters("Hulk")
 
-        Assert.assertEquals("Hulk", vm.filter.value)
+        Assert.assertEquals("Hulk", vm.onFilterChanged().value)
     }
 
     @Test
     fun should_open_detail_information_screen_when_user_clicked_item_in_character_list() {
         val testSubscriber = TestObserver<Screen>()
-        vm.onScreen.subscribe(testSubscriber)
+        vm.onOpenScreen().subscribe(testSubscriber)
 
         val characterId = 100L
         vm.openCharacterInformationScreen(characterId)

@@ -1,10 +1,12 @@
 package com.ps.superheroapp.ui.character_screen
 
 import androidx.databinding.ObservableField
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ps.superheroapp.objects.*
 import com.ps.superheroapp.ui.character_screen.list.Character
+import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
@@ -16,10 +18,10 @@ class CharactersViewModel @Inject constructor(
     private val connectivityChecker: ConnectivityChecker
 ) : ViewModel() {
 
-    val onScreen = PublishSubject.create<Screen>()
-    val filter = MutableLiveData<String>()
-    val characters = MutableLiveData<Array<Character>>()
-    val compositDisposable = CompositeDisposable()
+    private val onScreen = PublishSubject.create<Screen>()
+    private val filter = MutableLiveData<String>()
+    private val characters = MutableLiveData<Array<Character>>()
+    private val compositDisposable = CompositeDisposable()
     val error = ObservableField<ErrorType>()
     val loaderVisibility = ObservableField(ViewVisibility.GONE)
 
@@ -55,4 +57,10 @@ class CharactersViewModel @Inject constructor(
         screenToOpen.payload[Extras.CHARACTER_ID] = characterId
         onScreen.onNext(screenToOpen)
     }
+
+    fun onOpenScreen(): Observable<Screen> = onScreen
+
+    fun onFilterChanged(): LiveData<String> = filter
+
+    fun onCharactersLoaded(): LiveData<Array<Character>> = characters
 }
