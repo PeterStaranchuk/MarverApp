@@ -8,7 +8,7 @@ import com.ps.superheroapp.objects.*
 import com.ps.superheroapp.ui.character_screen.list.Character
 import io.reactivex.Observable
 import io.reactivex.Scheduler
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
@@ -21,31 +21,30 @@ class CharactersViewModel @Inject constructor(
     private val onScreen = PublishSubject.create<Screen>()
     private val filter = MutableLiveData<String>()
     private val characters = MutableLiveData<Array<Character>>()
-    private val compositDisposable = CompositeDisposable()
+    private var disposable: Disposable? = null
     val error = ObservableField<ErrorType>()
     val loaderVisibility = ObservableField(ViewVisibility.GONE)
 
     fun fetchCharacters() {
-        compositDisposable.add(
-            interactor.getCharacters()
-                .doOnSubscribe {
-                    error.set(null)
-                    loaderVisibility.set(ViewVisibility.VISIBLE)
+        disposable?.dispose()
+        disposable = interactor.getCharacters()
+            .doOnSubscribe {
+                error.set(null)
+                loaderVisibility.set(ViewVisibility.VISIBLE)
+            }
+            .doFinally {
+                loaderVisibility.set(ViewVisibility.GONE)
+            }
+            .observeOn(mainScheduler)
+            .subscribe({
+                characters.value = it
+            }, {
+                if (connectivityChecker.isOffline()) {
+                    error.set(ErrorType.NETWORK)
+                } else {
+                    error.set(ErrorType.GENERAL)
                 }
-                .doFinally {
-                    loaderVisibility.set(ViewVisibility.GONE)
-                }
-                .observeOn(mainScheduler)
-                .subscribe({
-                    characters.value = it
-                }, {
-                    if (connectivityChecker.isOffline()) {
-                        error.set(ErrorType.NETWORK)
-                    } else {
-                        error.set(ErrorType.GENERAL)
-                    }
-                })
-        )
+            })
     }
 
     fun filterCharacters(filter: String) {
@@ -63,4 +62,9 @@ class CharactersViewModel @Inject constructor(
     fun onFilterChanged(): LiveData<String> = filter
 
     fun onCharactersLoaded(): LiveData<Array<Character>> = characters
+
+    override fun onCleared() {
+        disposable?.dispose()
+        super.onCleared()
+    }
 }
