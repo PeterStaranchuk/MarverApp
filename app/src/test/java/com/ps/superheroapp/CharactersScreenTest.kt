@@ -108,12 +108,22 @@ class CharactersScreenTest {
 
     @Test
     fun should_hide_progress_when_network_error_occurred() {
+        `when`(connectivityChecker.isOffline()).thenReturn(true)
+        `when`(interactor.getCharacters()).thenReturn(Observable.error(Throwable()))
 
+        vm.fetchCharacters()
+
+        Assert.assertEquals(vm.loaderVisibility.get(), ViewVisibility.GONE)
     }
 
     @Test
     fun should_hide_progress_when_general_error_occurred() {
+        `when`(connectivityChecker.isOffline()).thenReturn(false)
+        `when`(interactor.getCharacters()).thenReturn(Observable.error(Throwable()))
 
+        vm.fetchCharacters()
+
+        Assert.assertEquals(vm.loaderVisibility.get(), ViewVisibility.GONE)
     }
 
 }
