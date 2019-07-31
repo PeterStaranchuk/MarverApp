@@ -1,4 +1,4 @@
-package com.ps.superheroapp.extentions
+package com.ps.superheroapp.extensions
 
 import android.view.View
 import com.ps.superheroapp.SuperHeroApplication

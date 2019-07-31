@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.ps.superheroapp.databinding.FragmentCharactersBinding
-import com.ps.superheroapp.extentions.getAppComponent
+import com.ps.superheroapp.extensions.getAppComponent
 import javax.inject.Inject
 
 class CharactersFragment : Fragment() {
