@@ -1,12 +1,12 @@
 package com.ps.superheroapp
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.ps.superheroapp.objects.ConnectivityCheckerImpl
-import com.ps.superheroapp.objects.ErrorType
+import com.ps.superheroapp.objects.*
 import com.ps.superheroapp.ui.character_screen.CharactersInteractorImpl
 import com.ps.superheroapp.ui.character_screen.CharactersViewModel
-import com.ps.superheroapp.ui.character_screen.list.*
+import com.ps.superheroapp.ui.character_screen.list.Character
 import io.reactivex.Observable
+import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.Schedulers
 import org.junit.Assert
 import org.junit.Before
@@ -41,18 +41,9 @@ class CharactersScreenTest {
         `when`(interactor.getCharacters()).thenReturn(
             Observable.just(
                 arrayOf(
-                    Character(
-                        Image(""),
-                        Appearance(),
-                        Work(),
-                        "Spider Man",
-                        Powerstats(),
-                        "id1",
-                        Biography(),
-                        Connections()
-                    ),
-                    Character(Image(""), Appearance(), Work(), "Tor", Powerstats(), "id2", Biography(), Connections()),
-                    Character(Image(""), Appearance(), Work(), "Hulk", Powerstats(), "id3", Biography(), Connections())
+                    Character(name = "SpiderMan", id = "id1"),
+                    Character(name = "Hulk", id = "id2"),
+                    Character(name = "Tor", id = "id3")
                 )
             )
         )
@@ -89,12 +80,30 @@ class CharactersScreenTest {
 
     @Test
     fun should_open_detail_information_screen_when_user_clicked_item_in_character_list() {
+        val testSubscriber = TestObserver<Screen>()
+        vm.onScreen.subscribe(testSubscriber)
 
+        val characterId = 100L
+        vm.openCharacterInformationScreen(characterId)
+
+        testSubscriber.assertValue {
+            it == Screen.CHARACTER_DETAIL_INFO && it.payload[Extras.CHARACTER_ID] == characterId
+        }
     }
 
     @Test
     fun should_show_progress_bar_when_character_list_loading() {
-
+        `when`(interactor.getCharacters()).thenReturn(
+            Observable.just(
+                arrayOf(
+                    Character(name = "SpiderMan", id = "id1"),
+                    Character(name = "Hulk", id = "id2"),
+                    Character(name = "Tor", id = "id3")
+                )
+            )
+        )
+        vm.fetchCharacters()
+        Assert.assertEquals(vm.loaderVisibility.get(), ViewVisibility.VISIBLE)
     }
 
     @Test
