@@ -29,6 +29,9 @@ class CharactersViewModel @Inject constructor(
                 .doOnSubscribe {
                     loaderVisibility.set(ViewVisibility.VISIBLE)
                 }
+                .doFinally {
+                    loaderVisibility.set(ViewVisibility.GONE)
+                }
                 .observeOn(mainScheduler)
                 .subscribe({
                     characters.value = it
