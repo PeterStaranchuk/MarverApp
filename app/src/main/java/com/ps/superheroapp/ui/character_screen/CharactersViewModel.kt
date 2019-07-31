@@ -27,6 +27,7 @@ class CharactersViewModel @Inject constructor(
         compositDisposable.add(
             interactor.getCharacters()
                 .doOnSubscribe {
+                    error.set(null)
                     loaderVisibility.set(ViewVisibility.VISIBLE)
                 }
                 .doFinally {
