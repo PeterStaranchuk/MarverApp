@@ -11,10 +11,11 @@ import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
+import javax.inject.Named
 
 class CharactersViewModel @Inject constructor(
     private val interactor: CharactersContract.Interactor,
-    private val mainScheduler: Scheduler,
+    @Named(SchedulerNames.MAIN) private val mainScheduler: Scheduler,
     private val connectivityChecker: ConnectivityChecker
 ) : ViewModel() {
 
