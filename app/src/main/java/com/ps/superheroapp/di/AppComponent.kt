@@ -2,10 +2,7 @@ package com.ps.superheroapp.di
 
 import android.app.Application
 import com.ps.superheroapp.SuperHeroApplication
-import com.ps.superheroapp.di.modules.AppModule
-import com.ps.superheroapp.di.modules.ConnectivityModule
-import com.ps.superheroapp.di.modules.PicassoModule
-import com.ps.superheroapp.di.modules.SchedulersModule
+import com.ps.superheroapp.di.modules.*
 import com.ps.superheroapp.ui.character_screen.CharacterSubcomponent
 import com.ps.superheroapp.ui.character_screen.CharactersModule
 import dagger.BindsInstance
@@ -20,7 +17,8 @@ import javax.inject.Singleton
         CharactersModule::class,
         PicassoModule::class,
         SchedulersModule::class,
-        ConnectivityModule::class]
+        ConnectivityModule::class,
+        NetworkModule::class]
 )
 @Singleton
 interface AppComponent {
