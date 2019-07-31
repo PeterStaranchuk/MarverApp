@@ -9,14 +9,14 @@ class Connections(
 )
 
 class Character(
-    @SerializedName("image") val image: Image,
-    @SerializedName("appearance") val appearance: Appearance,
-    @SerializedName("work") val work: Work,
+    @SerializedName("image") val image: Image = Image(""),
+    @SerializedName("appearance") val appearance: Appearance = Appearance(),
+    @SerializedName("work") val work: Work = Work(),
     @SerializedName("name") val name: String = "",
-    @SerializedName("powerstats") val powerstats: Powerstats,
+    @SerializedName("powerstats") val powerstats: Powerstats = Powerstats(),
     @SerializedName("id") val id: String = "",
-    @SerializedName("biography") val biography: Biography,
-    @SerializedName("connections") val connections: Connections
+    @SerializedName("biography") val biography: Biography = Biography(),
+    @SerializedName("connections") val connections: Connections = Connections()
 )
 
 class Work(

@@ -3,11 +3,11 @@ package com.ps.superheroapp.ui.character_screen
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ps.superheroapp.objects.ConnectivityChecker
-import com.ps.superheroapp.objects.ErrorType
+import com.ps.superheroapp.objects.*
 import com.ps.superheroapp.ui.character_screen.list.Character
 import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 class CharactersViewModel @Inject constructor(
@@ -16,14 +16,19 @@ class CharactersViewModel @Inject constructor(
     private val connectivityChecker: ConnectivityChecker
 ) : ViewModel() {
 
+    val onScreen = PublishSubject.create<Screen>()
     val filter = MutableLiveData<String>()
     val characters = MutableLiveData<Array<Character>>()
     val compositDisposable = CompositeDisposable()
     val error = ObservableField<ErrorType>()
+    val loaderVisibility = ObservableField(ViewVisibility.GONE)
 
     fun fetchCharacters() {
         compositDisposable.add(
             interactor.getCharacters()
+                .doOnSubscribe {
+                    loaderVisibility.set(ViewVisibility.VISIBLE)
+                }
                 .observeOn(mainScheduler)
                 .subscribe({
                     characters.value = it
@@ -39,5 +44,11 @@ class CharactersViewModel @Inject constructor(
 
     fun filterCharacters(filter: String) {
         this.filter.value = filter
+    }
+
+    fun openCharacterInformationScreen(characterId: Long) {
+        val screenToOpen = Screen.CHARACTER_DETAIL_INFO
+        screenToOpen.payload[Extras.CHARACTER_ID] = characterId
+        onScreen.onNext(screenToOpen)
     }
 }
