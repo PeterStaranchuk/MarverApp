@@ -6,6 +6,7 @@ import com.ps.superheroapp.objects.SchedulerNames
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Scheduler
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -15,25 +16,27 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
-@Module
+@Module(includes = [InterceptorsModule::class])
 class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
-        return interceptor
+    fun provideGson(): Gson {
+        return Gson()
     }
 
     @Provides
     @Singleton
-    fun provideOkHttp(interceptor: HttpLoggingInterceptor): OkHttpClient {
+    fun provideOkHttp(httpLoggingInterceptor: HttpLoggingInterceptor,
+                      @Named(InterceptorsModule.HEADER) headerInterceptor: Interceptor,
+                      @Named(InterceptorsModule.AUTH) authInterceptor: Interceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
-            .addInterceptor(interceptor)
+            .addInterceptor(httpLoggingInterceptor)
+            .addInterceptor(headerInterceptor)
+            .addInterceptor(authInterceptor)
             .build()
     }
 

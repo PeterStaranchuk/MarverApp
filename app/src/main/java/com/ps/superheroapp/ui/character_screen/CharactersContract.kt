@@ -1,11 +1,11 @@
 package com.ps.superheroapp.ui.character_screen
 
 import com.ps.superheroapp.ui.character_screen.list.Character
-import io.reactivex.Observable
+import io.reactivex.Single
 
 interface CharactersContract {
 
     interface Interactor {
-        fun getCharacters(): Observable<Array<Character>>
+        fun getCharacters(): Single<Array<Character>>
     }
 }
