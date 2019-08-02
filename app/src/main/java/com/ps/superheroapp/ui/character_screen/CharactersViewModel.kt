@@ -14,9 +14,9 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class CharactersViewModel @Inject constructor(
-    private val interactor: CharactersContract.Interactor,
-    @Named(SchedulerNames.MAIN) private val mainScheduler: Scheduler,
-    private val connectivityChecker: ConnectivityChecker
+        private val interactor: CharactersContract.Interactor,
+        @Named(SchedulerNames.MAIN) private val mainScheduler: Scheduler,
+        private val connectivityChecker: ConnectivityChecker
 ) : ViewModel() {
 
     private val onScreen = PublishSubject.create<Screen>()
@@ -29,23 +29,23 @@ class CharactersViewModel @Inject constructor(
     fun fetchCharacters() {
         disposable?.dispose()
         disposable = interactor.getCharacters()
-            .doOnSubscribe {
-                error.set(null)
-                loaderVisibility.set(ViewVisibility.VISIBLE)
-            }
-            .doFinally {
-                loaderVisibility.set(ViewVisibility.GONE)
-            }
-            .observeOn(mainScheduler)
-            .subscribe({
-                characters.value = it
-            }, {
-                if (connectivityChecker.isOffline()) {
-                    error.set(ErrorType.NETWORK)
-                } else {
-                    error.set(ErrorType.GENERAL)
+                .observeOn(mainScheduler)
+                .doOnSubscribe {
+                    error.set(null)
+                    loaderVisibility.set(ViewVisibility.VISIBLE)
                 }
-            })
+                .doFinally {
+                    loaderVisibility.set(ViewVisibility.GONE)
+                }
+                .subscribe({
+                    characters.value = it
+                }, {
+                    if (connectivityChecker.isOffline()) {
+                        error.set(ErrorType.NETWORK)
+                    } else {
+                        error.set(ErrorType.GENERAL)
+                    }
+                })
     }
 
     fun filterCharacters(filter: String) {

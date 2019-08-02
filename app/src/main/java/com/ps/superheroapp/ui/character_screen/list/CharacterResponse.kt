@@ -67,7 +67,9 @@ class Stories(
 class Thumbnail(
     val path: String = "",
     val extension: String = ""
-)
+) {
+    fun getAvatarUrl() = "$path.$extension".replace("http","https")
+}
 
 class Comics(
     val collectionURI: String = "",

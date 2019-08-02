@@ -41,6 +41,7 @@ class NetworkModule {
     }
 
     @Provides
+    @Singleton
     fun provideRetrofitInstance(
         okHttpClient: OkHttpClient,
         gson: Gson, @Named(SchedulerNames.IO) ioScheduler: Scheduler

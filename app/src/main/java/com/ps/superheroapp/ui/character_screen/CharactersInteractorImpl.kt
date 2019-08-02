@@ -9,6 +9,8 @@ class CharactersInteractorImpl @Inject constructor(private val superheroApi: Sup
     CharactersContract.Interactor {
 
     override fun getCharacters(): Single<Array<Character>> {
-        return superheroApi.searchCharacter()
+        return superheroApi.searchCharacter().map {
+            it.data.results
+        }
     }
 }
