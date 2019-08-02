@@ -1,65 +1,77 @@
 package com.ps.superheroapp.ui.character_screen.list
 
+class Series(
+    val collectionURI: String = "",
+    val available: Int = 0,
+    val returned: Int = 0,
+    val items: Array<ItemsItem>? = arrayOf()
+)
 
-import com.google.gson.annotations.SerializedName
-
-class Connections(
-    @SerializedName("relatives") val relatives: String = "",
-    @SerializedName("group-affiliation") val groupAffiliation: String = ""
+class Events(
+    val collectionURI: String = "",
+    val available: Int = 0,
+    val returned: Int = 0,
+    val items: Array<ItemsItem>? = arrayOf()
 )
 
 class Character(
-    @SerializedName("image") val image: Image = Image(""),
-    @SerializedName("appearance") val appearance: Appearance = Appearance(),
-    @SerializedName("work") val work: Work = Work(),
-    @SerializedName("name") val name: String = "",
-    @SerializedName("powerstats") val powerstats: Powerstats = Powerstats(),
-    @SerializedName("id") val id: String = "",
-    @SerializedName("biography") val biography: Biography = Biography(),
-    @SerializedName("connections") val connections: Connections = Connections()
+    val thumbnail: Thumbnail = Thumbnail(),
+    val urls: Array<UrlsItem>? = arrayOf(),
+    val stories: Stories = Stories(),
+    val series: Series = Series(),
+    val comics: Comics = Comics(),
+    val name: String = "",
+    val description: String = "",
+    val modified: String = "",
+    val id: Long = 0,
+    val resourceURI: String = "",
+    val events: Events = Events()
 )
 
-class Work(
-    @SerializedName("occupation") val occupation: String = "",
-    @SerializedName("base") val base: String = ""
+class CharactersResponse(
+    val copyright: String = "",
+    val code: Int = 0,
+    val data: Data,
+    val attributionHTML: String = "",
+    val attributionText: String = "",
+    val etag: String = "",
+    val status: String = ""
 )
 
-class Biography(
-    @SerializedName("place-of-birth") val placeOfBirth: String = "",
-    @SerializedName("aliases") val aliases: Array<String>? = arrayOf(),
-    @SerializedName("first-appearance") val firstAppearance: String = "",
-    @SerializedName("publisher") val publisher: String = "",
-    @SerializedName("alignment") val alignment: String = "",
-    @SerializedName("full-name") val fullName: String = "",
-    @SerializedName("alter-egos") val alterEgos: String = ""
+class UrlsItem(
+    val type: String = "",
+    val url: String = ""
 )
 
-
-class Powerstats(
-    @SerializedName("strength") val strength: String = "",
-    @SerializedName("durability") val durability: String = "",
-    @SerializedName("combat") val combat: String = "",
-    @SerializedName("power") val power: String = "",
-    @SerializedName("speed") val speed: String = "",
-    @SerializedName("intelligence") val intelligence: String = ""
+class ItemsItem(
+    val name: String = "",
+    val resourceURI: String = ""
 )
 
-class Image(@SerializedName("url") val url: String = "")
-
-class Appearance(
-    @SerializedName("eye-color") val eyeColor: String = "",
-    @SerializedName("gender") val gender: String = "",
-    @SerializedName("race") val race: String = "",
-    @SerializedName("weight") val weight: Array<String>? = arrayOf(),
-    @SerializedName("height") val height: Array<String>? = arrayOf(),
-    @SerializedName("hair-color") val hairColor: String = ""
+class Data(
+    val total: Int = 0,
+    val offset: Int = 0,
+    val limit: Int = 0,
+    val count: Int = 0,
+    val results: Array<Character>?
 )
 
-
-class CharacterResponse(
-    @SerializedName("results-for") val resultsFor: String = "",
-    @SerializedName("response") val response: String = "",
-    @SerializedName("results") val characters: Array<Character>?
+class Stories(
+    val collectionURI: String = "",
+    val available: Int = 0,
+    val returned: Int = 0,
+    val items: Array<ItemsItem>? = arrayOf()
 )
 
 
+class Thumbnail(
+    val path: String = "",
+    val extension: String = ""
+)
+
+class Comics(
+    val collectionURI: String = "",
+    val available: Int = 0,
+    val returned: Int = 0,
+    val items: Array<ItemsItem>? = arrayOf()
+)
