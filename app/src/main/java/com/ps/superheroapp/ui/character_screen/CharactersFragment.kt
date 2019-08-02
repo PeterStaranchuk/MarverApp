@@ -1,5 +1,6 @@
 package com.ps.superheroapp.ui.character_screen
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,23 +22,29 @@ class CharactersFragment : Fragment() {
 
     lateinit var binding: FragmentCharactersBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            FragmentCharactersBinding.inflate(inflater, container, false).apply {
-                binding = this
-            }.root
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
         getAppComponent()
                 .characterSubcomponent()
                 .with(this)
                 .build()
                 .inject(this)
 
-        binding.charactersList.setController(controller)
         vm.onCharactersLoaded().observe(this, Observer {
             controller.setCharacters(it)
         })
         vm.fetchCharacters()
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) : View {
+        binding = FragmentCharactersBinding.inflate(inflater, container, false)
+        binding.vm = vm
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.charactersList.setController(controller)
     }
 }

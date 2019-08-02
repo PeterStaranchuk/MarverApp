@@ -24,7 +24,7 @@ class CharactersViewModel @Inject constructor(
     private val characters = MutableLiveData<Array<Character>>()
     private var disposable: Disposable? = null
     val error = ObservableField<ErrorType>()
-    val loaderVisibility = ObservableField(ViewVisibility.GONE)
+    val loaderVisibility = ObservableField(ViewVisibility.VISIBLE)
 
     fun fetchCharacters() {
         disposable?.dispose()
