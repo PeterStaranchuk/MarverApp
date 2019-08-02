@@ -13,7 +13,9 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "API_KEY", API_KEY)
-        buildConfigField "String", 'BASE_URL', "\"https://superheroapi.com/api/\"" //we have only one type of API_KEY and BASE_URL, so it's not necessary to put it in buildTypes
+        buildConfigField("String", "TIMESTAMP", TIMESTAMP)
+        buildConfigField("String", "HASH", HASH)
+        buildConfigField "String", 'BASE_URL', "\"https://gateway.marvel.com\"" //we have only one type of API_KEY and BASE_URL, so it's not necessary to put it in buildTypes
         dataBinding {
             enabled = true
         }
