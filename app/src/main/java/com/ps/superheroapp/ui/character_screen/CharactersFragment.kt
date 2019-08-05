@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import com.ps.superheroapp.databinding.FragmentCharactersBinding
 import com.ps.superheroapp.extensions.getAppComponent
 import com.ps.superheroapp.ui.character_screen.list.CharacterController
+import com.ps.superheroapp.ui.character_screen.list.CharacterItemDecorator
 import javax.inject.Inject
 
 class CharactersFragment : Fragment() {
@@ -46,5 +47,6 @@ class CharactersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.charactersList.setController(controller)
+        binding.charactersList.addItemDecoration(CharacterItemDecorator())
     }
 }
