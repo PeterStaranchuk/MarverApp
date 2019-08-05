@@ -37,7 +37,7 @@ class CharactersFragment : Fragment() {
         vm.fetchCharacters()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) : View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentCharactersBinding.inflate(inflater, container, false)
         binding.vm = vm
         return binding.root
@@ -48,5 +48,9 @@ class CharactersFragment : Fragment() {
 
         binding.charactersList.setController(controller)
         binding.charactersList.addItemDecoration(CharacterItemDecorator())
+
+        vm.onFilterChanged().observe(this, Observer {
+            controller.filterCharacters(it)
+        })
     }
 }

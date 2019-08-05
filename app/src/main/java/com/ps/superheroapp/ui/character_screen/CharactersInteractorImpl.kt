@@ -8,7 +8,7 @@ import javax.inject.Inject
 class CharactersInteractorImpl @Inject constructor(private val superheroApi: SuperheroApi) :
     CharactersContract.Interactor {
 
-    override fun getCharacters(): Single<Array<Character>> {
+    override fun getCharacters(): Single<List<Character>> {
         return superheroApi.searchCharacter().map {
             it.data.results
         }

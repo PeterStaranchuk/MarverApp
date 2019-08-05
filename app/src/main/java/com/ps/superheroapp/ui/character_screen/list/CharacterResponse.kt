@@ -4,19 +4,19 @@ class Series(
     val collectionURI: String = "",
     val available: Int = 0,
     val returned: Int = 0,
-    val items: Array<ItemsItem>? = arrayOf()
+    val items: List<ItemsItem>? = listOf()
 )
 
 class Events(
     val collectionURI: String = "",
     val available: Int = 0,
     val returned: Int = 0,
-    val items: Array<ItemsItem>? = arrayOf()
+    val items: List<ItemsItem>? = listOf()
 )
 
 class Character(
     val thumbnail: Thumbnail = Thumbnail(),
-    val urls: Array<UrlsItem>? = arrayOf(),
+    val urls: List<UrlsItem>? = listOf(),
     val stories: Stories = Stories(),
     val series: Series = Series(),
     val comics: Comics = Comics(),
@@ -53,14 +53,14 @@ class Data(
     val offset: Int = 0,
     val limit: Int = 0,
     val count: Int = 0,
-    val results: Array<Character>?
+    val results: List<Character>?
 )
 
 class Stories(
     val collectionURI: String = "",
     val available: Int = 0,
     val returned: Int = 0,
-    val items: Array<ItemsItem>? = arrayOf()
+    val items: List<ItemsItem>? = listOf()
 )
 
 
@@ -75,5 +75,5 @@ class Comics(
     val collectionURI: String = "",
     val available: Int = 0,
     val returned: Int = 0,
-    val items: Array<ItemsItem>? = arrayOf()
+    val items: List<ItemsItem>? = listOf()
 )

@@ -6,6 +6,6 @@ import io.reactivex.Single
 interface CharactersContract {
 
     interface Interactor {
-        fun getCharacters(): Single<Array<Character>>
+        fun getCharacters(): Single<List<Character>>
     }
 }

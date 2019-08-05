@@ -20,8 +20,8 @@ class CharactersViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val onScreen = PublishSubject.create<Screen>()
-    private val filter = MutableLiveData<String>()
-    private val characters = MutableLiveData<Array<Character>>()
+    val filter = MutableLiveData<String>()
+    private val characters = MutableLiveData<List<Character>>()
     private var disposable: Disposable? = null
     val error = ObservableField<ErrorType>()
     val loaderVisibility = ObservableField(ViewVisibility.VISIBLE)
@@ -62,7 +62,7 @@ class CharactersViewModel @Inject constructor(
 
     fun onFilterChanged(): LiveData<String> = filter
 
-    fun onCharactersLoaded(): LiveData<Array<Character>> = characters
+    fun onCharactersLoaded(): LiveData<List<Character>> = characters
 
     override fun onCleared() {
         disposable?.dispose()
