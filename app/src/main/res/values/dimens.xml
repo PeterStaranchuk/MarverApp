@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="character_item_height">150dp</dimen>
-    <dimen name="character_screen_search_margin">16dp</dimen>
+    <dimen name="character_screen_search_margin">8dp</dimen>
     <dimen name="character_screen_list_top_margin">8dp</dimen>
     <dimen name="item_character_space">8dp</dimen>
 </resources>

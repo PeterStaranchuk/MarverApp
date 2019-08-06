@@ -33,6 +33,7 @@ class CharactersFragment : Fragment() {
 
         vm.onCharactersLoaded().observe(this, Observer {
             controller.setCharacters(it)
+            binding.swipeToRefresh.isRefreshing = false
         })
         vm.fetchCharacters()
     }
@@ -50,7 +51,11 @@ class CharactersFragment : Fragment() {
         binding.charactersList.addItemDecoration(CharacterItemDecorator())
 
         vm.onFilterChanged().observe(this, Observer {
-            controller.filterCharacters(it)
+            controller.filter.filter(it)
         })
+
+        binding.swipeToRefresh.setOnRefreshListener {
+            vm.fetchCharacters()
+        }
     }
 }

@@ -1,20 +1,20 @@
 package com.ps.superheroapp.ui.character_screen.list
 
-class Series(
+data class Series(
     val collectionURI: String = "",
     val available: Int = 0,
     val returned: Int = 0,
     val items: List<ItemsItem>? = listOf()
 )
 
-class Events(
+data class Events(
     val collectionURI: String = "",
     val available: Int = 0,
     val returned: Int = 0,
     val items: List<ItemsItem>? = listOf()
 )
 
-class Character(
+data class Character(
     val thumbnail: Thumbnail = Thumbnail(),
     val urls: List<UrlsItem>? = listOf(),
     val stories: Stories = Stories(),
@@ -28,7 +28,7 @@ class Character(
     val events: Events = Events()
 )
 
-class CharactersResponse(
+data class CharactersResponse(
     val copyright: String = "",
     val code: Int = 0,
     val data: Data,
@@ -38,17 +38,17 @@ class CharactersResponse(
     val status: String = ""
 )
 
-class UrlsItem(
+data class UrlsItem(
     val type: String = "",
     val url: String = ""
 )
 
-class ItemsItem(
+data class ItemsItem(
     val name: String = "",
     val resourceURI: String = ""
 )
 
-class Data(
+data class Data(
     val total: Int = 0,
     val offset: Int = 0,
     val limit: Int = 0,
@@ -56,7 +56,7 @@ class Data(
     val results: List<Character>?
 )
 
-class Stories(
+data class Stories(
     val collectionURI: String = "",
     val available: Int = 0,
     val returned: Int = 0,
@@ -64,14 +64,14 @@ class Stories(
 )
 
 
-class Thumbnail(
+data class Thumbnail(
     val path: String = "",
     val extension: String = ""
 ) {
     fun getAvatarUrl() = "$path.$extension".replace("http","https")
 }
 
-class Comics(
+data class Comics(
     val collectionURI: String = "",
     val available: Int = 0,
     val returned: Int = 0,

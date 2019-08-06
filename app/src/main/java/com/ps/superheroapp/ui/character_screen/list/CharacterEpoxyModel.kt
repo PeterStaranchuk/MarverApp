@@ -9,7 +9,7 @@ class CharacterEpoxyModel(val character: Character) : DataBindingEpoxyModel() {
     override fun getDefaultLayout() = R.layout.item_character
 
     init {
-        id(character.id)
+        id(character.toString())
     }
 
     override fun setDataBindingVariables(binding: ViewDataBinding) {

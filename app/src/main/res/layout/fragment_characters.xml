@@ -32,19 +32,28 @@
             android:layout_marginStart="@dimen/character_screen_search_margin"
             android:layout_marginEnd="@dimen/character_screen_search_margin"
             android:hint="@string/characters_screen_search_hint"
+            android:text="@={vm.filter}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-        <com.airbnb.epoxy.EpoxyRecyclerView
-            android:id="@+id/characters_list"
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_to_refresh"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/search_query"
-            tools:listitem="@layout/item_character" />
+            app:layout_constraintTop_toBottomOf="@+id/search_query">
+
+            <com.airbnb.epoxy.EpoxyRecyclerView
+                android:id="@+id/characters_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:listitem="@layout/item_character" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <ProgressBar
             android:layout_width="wrap_content"
