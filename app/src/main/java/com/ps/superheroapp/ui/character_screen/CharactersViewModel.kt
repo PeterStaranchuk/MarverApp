@@ -3,53 +3,55 @@ package com.ps.superheroapp.ui.character_screen
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.paging.PagedList
 import com.ps.superheroapp.objects.*
 import com.ps.superheroapp.ui.character_screen.list.Character
 import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
-import javax.inject.Named
 
 class CharactersViewModel @Inject constructor(
-        private val interactor: CharactersContract.Interactor,
-        @Named(SchedulerNames.MAIN) private val mainScheduler: Scheduler,
-        private val connectivityChecker: ConnectivityChecker
+    private val interactor: CharactersContract.Interactor,
+    private val connectivityChecker: ConnectivityChecker,
+    private val disposable: CompositeDisposable
 ) : ViewModel() {
 
     private val onScreen = PublishSubject.create<Screen>()
-    val filter = MutableLiveData<String>()
-    private val characters = MutableLiveData<List<Character>>()
-    private var disposable: Disposable? = null
+    val searchQuery = MutableLiveData<String>()
+    private val characters = MutableLiveData<PagedList<Character>>()
     val error = ObservableField<ErrorType>()
     val loaderVisibility = ObservableField(ViewVisibility.VISIBLE)
 
-    fun fetchCharacters() {
-        disposable?.dispose()
-        disposable = interactor.getCharacters()
-                .observeOn(mainScheduler)
-                .doOnSubscribe {
-                    error.set(null)
-                    loaderVisibility.set(ViewVisibility.VISIBLE)
-                }
-                .doFinally {
-                    loaderVisibility.set(ViewVisibility.GONE)
-                }
-                .subscribe({
-                    characters.value = it
-                }, {
-                    if (connectivityChecker.isOffline()) {
-                        error.set(ErrorType.NETWORK)
-                    } else {
-                        error.set(ErrorType.GENERAL)
-                    }
-                })
+    private val filterCharactersObserver = Observer<String> {
+        fetchCharacters()
     }
 
-    fun filterCharacters(filter: String) {
-        this.filter.value = filter
+    init {
+        searchQuery.observeForever(filterCharactersObserver)
+    }
+
+    fun fetchCharacters() {
+        characters.value = interactor.getCharacters(searchQuery.value)
+        disposable.add(interactor.observeCharactersLoadEvents().subscribe {
+            it?.let { event ->
+                when (event) {
+                    CharacterLoadEvent.LOAD_STARTED -> loadStarted()
+                    CharacterLoadEvent.LOADED -> loadFinished()
+                    CharacterLoadEvent.ERROR -> handleError()
+                }
+            }
+        })
+    }
+
+    private fun handleError() {
+        if (connectivityChecker.isOffline()) {
+            error.set(ErrorType.NETWORK)
+        } else {
+            error.set(ErrorType.GENERAL)
+        }
     }
 
     fun openCharacterInformationScreen(characterId: Long) {
@@ -60,12 +62,20 @@ class CharactersViewModel @Inject constructor(
 
     fun onOpenScreen(): Observable<Screen> = onScreen
 
-    fun onFilterChanged(): LiveData<String> = filter
+    fun onCharactersLoaded(): LiveData<PagedList<Character>> = characters
 
-    fun onCharactersLoaded(): LiveData<List<Character>> = characters
+    private fun loadFinished() {
+        loaderVisibility.set(ViewVisibility.GONE)
+    }
+
+    private fun loadStarted() {
+        error.set(null)
+        loaderVisibility.set(ViewVisibility.VISIBLE)
+    }
 
     override fun onCleared() {
-        disposable?.dispose()
+        searchQuery.removeObserver(filterCharactersObserver)
+        disposable.dispose()
         super.onCleared()
     }
 }

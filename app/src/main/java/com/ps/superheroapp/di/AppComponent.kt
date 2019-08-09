@@ -4,7 +4,6 @@ import android.app.Application
 import com.ps.superheroapp.SuperHeroApplication
 import com.ps.superheroapp.di.modules.*
 import com.ps.superheroapp.ui.character_screen.CharacterSubcomponent
-import com.ps.superheroapp.ui.character_screen.CharactersModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -14,11 +13,11 @@ import javax.inject.Singleton
     modules = [
         AppModule::class,
         AndroidInjectionModule::class,
-        CharactersModule::class,
         PicassoModule::class,
         SchedulersModule::class,
         ConnectivityModule::class,
-        NetworkModule::class]
+        NetworkModule::class,
+        DisposableModule::class]
 )
 @Singleton
 interface AppComponent {
