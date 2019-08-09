@@ -6,8 +6,8 @@ import com.ps.superheroapp.ui.character_screen.CharactersInteractorImpl
 import com.ps.superheroapp.ui.character_screen.CharactersViewModel
 import com.ps.superheroapp.ui.character_screen.list.Character
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.TestObserver
-import io.reactivex.schedulers.Schedulers
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -32,15 +32,18 @@ class CharactersScreenTest {
     @Mock
     lateinit var interactor: CharactersInteractorImpl
 
+    @Mock
+    lateinit var disposable: CompositeDisposable
+
     @Before
     fun before() {
         MockitoAnnotations.initMocks(this)
-        vm = CharactersViewModel(interactor, Schedulers.trampoline(), connectivityChecker)
+        vm = CharactersViewModel(interactor, connectivityChecker, disposable)
     }
 
     @Test
     fun should_show_list_of_characters_when_screen_started() {
-        `when`(interactor.getCharactersLoadEventHandler()).then {
+        `when`(interactor.observeCharactersLoadEvents()).then {
             Observable.create<CharacterLoadEvent> { emitter ->
                 emitter.onNext(CharacterLoadEvent.LOAD_STARTED)
                 emitter.onNext(CharacterLoadEvent.LOADED)
@@ -64,7 +67,7 @@ class CharactersScreenTest {
     @Test
     fun should_show_network_error_when_screen_data_cannot_be_loaded_because_of_internet_connection() {
         `when`(connectivityChecker.isOffline()).thenReturn(true)
-        `when`(interactor.getCharactersLoadEventHandler()).thenReturn(Observable.just(CharacterLoadEvent.ERROR))
+        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.ERROR))
         `when`(interactor.getCharacters()).then {
             TestPageList.get<Character>(listOf())
         }
@@ -77,7 +80,7 @@ class CharactersScreenTest {
     @Test
     fun should_show_general_error_when_screen_data_cannot_be_loaded_because_of_unknown_error() {
         `when`(connectivityChecker.isOffline()).thenReturn(false)
-        `when`(interactor.getCharactersLoadEventHandler()).thenReturn(Observable.just(CharacterLoadEvent.ERROR))
+        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.ERROR))
 
         vm.fetchCharacters()
         Assert.assertEquals(ErrorType.GENERAL, vm.error.get())
@@ -85,7 +88,7 @@ class CharactersScreenTest {
 
     @Test
     fun should_filter_character_list_when_user_enter_text_in_search_field() {
-        `when`(interactor.getCharactersLoadEventHandler()).thenReturn(Observable.just(CharacterLoadEvent.LOAD_STARTED))
+        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.LOAD_STARTED))
         `when`(interactor.getCharacters()).then {
             TestPageList.get<Character>(listOf())
         }
@@ -111,7 +114,7 @@ class CharactersScreenTest {
 
     @Test
     fun should_show_progress_bar_when_character_list_loading() {
-        `when`(interactor.getCharactersLoadEventHandler()).thenReturn(Observable.just(CharacterLoadEvent.LOAD_STARTED))
+        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.LOAD_STARTED))
         val list = TestPageList.get<Character>(
             listOf(
                 Character(name = "SpiderMan", id = 1),
@@ -129,7 +132,7 @@ class CharactersScreenTest {
     @Test
     fun should_hide_progress_when_network_error_occurred() {
         `when`(connectivityChecker.isOffline()).thenReturn(true)
-        `when`(interactor.getCharactersLoadEventHandler()).then {
+        `when`(interactor.observeCharactersLoadEvents()).then {
             Observable.create<CharacterLoadEvent> { emitter ->
                 emitter.onNext(CharacterLoadEvent.ERROR)
                 emitter.onNext(CharacterLoadEvent.LOADED)
@@ -144,7 +147,7 @@ class CharactersScreenTest {
     @Test
     fun should_hide_progress_when_general_error_occurred() {
         `when`(connectivityChecker.isOffline()).thenReturn(false)
-        `when`(interactor.getCharactersLoadEventHandler()).then {
+        `when`(interactor.observeCharactersLoadEvents()).then {
             Observable.create<CharacterLoadEvent> { emitter ->
                 emitter.onNext(CharacterLoadEvent.ERROR)
                 emitter.onNext(CharacterLoadEvent.LOADED)
@@ -158,7 +161,7 @@ class CharactersScreenTest {
 
     @Test
     fun should_hide_progress_when_character_data_loaded() {
-        `when`(interactor.getCharactersLoadEventHandler()).then {
+        `when`(interactor.observeCharactersLoadEvents()).then {
             Observable.create<CharacterLoadEvent> { emitter ->
                 emitter.onNext(CharacterLoadEvent.LOAD_STARTED)
                 emitter.onNext(CharacterLoadEvent.LOADED)
@@ -179,7 +182,7 @@ class CharactersScreenTest {
 
     @Test
     fun should_hide_error_when_loading_started() {
-        `when`(interactor.getCharactersLoadEventHandler()).then {
+        `when`(interactor.observeCharactersLoadEvents()).then {
             Observable.create<CharacterLoadEvent> { emitter ->
                 emitter.onNext(CharacterLoadEvent.LOAD_STARTED)
             }
