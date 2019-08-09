@@ -5,7 +5,7 @@ import com.ps.superheroapp.objects.*
 import com.ps.superheroapp.ui.character_screen.CharactersInteractorImpl
 import com.ps.superheroapp.ui.character_screen.CharactersViewModel
 import com.ps.superheroapp.ui.character_screen.list.Character
-import io.reactivex.Single
+import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.Schedulers
 import org.junit.Assert
@@ -14,9 +14,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.times
 import org.mockito.MockitoAnnotations
-import java.util.concurrent.TimeUnit
 
 class CharactersScreenTest {
 
@@ -24,12 +25,12 @@ class CharactersScreenTest {
     var rule: TestRule = InstantTaskExecutorRule()
 
     @Mock
-    lateinit var interactor: CharactersInteractorImpl
-
-    @Mock
     lateinit var connectivityChecker: ConnectivityCheckerImpl
 
     lateinit var vm: CharactersViewModel
+
+    @Mock
+    lateinit var interactor: CharactersInteractorImpl
 
     @Before
     fun before() {
@@ -39,15 +40,21 @@ class CharactersScreenTest {
 
     @Test
     fun should_show_list_of_characters_when_screen_started() {
-        `when`(interactor.getCharacters()).thenReturn(
-            Single.just(
-                arrayOf(
-                    Character(name = "SpiderMan", id = 1),
-                    Character(name = "Hulk", id = 2),
-                    Character(name = "Tor", id = 3)
-                )
+        `when`(interactor.getCharactersLoadEventHandler()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.LOAD_STARTED)
+                emitter.onNext(CharacterLoadEvent.LOADED)
+            }
+        }
+        val list = TestPageList.get<Character>(
+            listOf(
+                Character(name = "SpiderMan", id = 1),
+                Character(name = "Hulk", id = 2),
+                Character(name = "Tor", id = 3)
             )
         )
+
+        `when`(interactor.getCharacters()).thenReturn(list)
 
         vm.fetchCharacters()
 
@@ -57,16 +64,20 @@ class CharactersScreenTest {
     @Test
     fun should_show_network_error_when_screen_data_cannot_be_loaded_because_of_internet_connection() {
         `when`(connectivityChecker.isOffline()).thenReturn(true)
-        `when`(interactor.getCharacters()).thenReturn(Single.error(Throwable()))
+        `when`(interactor.getCharactersLoadEventHandler()).thenReturn(Observable.just(CharacterLoadEvent.ERROR))
+        `when`(interactor.getCharacters()).then {
+            TestPageList.get<Character>(listOf())
+        }
 
         vm.fetchCharacters()
+
         Assert.assertEquals(ErrorType.NETWORK, vm.error.get())
     }
 
     @Test
     fun should_show_general_error_when_screen_data_cannot_be_loaded_because_of_unknown_error() {
         `when`(connectivityChecker.isOffline()).thenReturn(false)
-        `when`(interactor.getCharacters()).thenReturn(Single.error(Throwable()))
+        `when`(interactor.getCharactersLoadEventHandler()).thenReturn(Observable.just(CharacterLoadEvent.ERROR))
 
         vm.fetchCharacters()
         Assert.assertEquals(ErrorType.GENERAL, vm.error.get())
@@ -74,10 +85,16 @@ class CharactersScreenTest {
 
     @Test
     fun should_filter_character_list_when_user_enter_text_in_search_field() {
-        vm.filterCharacters("Hulk")
+        `when`(interactor.getCharactersLoadEventHandler()).thenReturn(Observable.just(CharacterLoadEvent.LOAD_STARTED))
+        `when`(interactor.getCharacters()).then {
+            TestPageList.get<Character>(listOf())
+        }
 
-        Assert.assertEquals("Hulk", vm.onFilterChanged().value)
+        vm.searchQuery.value = "Hulk"
+
+        Mockito.verify(interactor, times(1)).getCharacters("Hulk")
     }
+
 
     @Test
     fun should_open_detail_information_screen_when_user_clicked_item_in_character_list() {
@@ -94,66 +111,90 @@ class CharactersScreenTest {
 
     @Test
     fun should_show_progress_bar_when_character_list_loading() {
-        `when`(interactor.getCharacters()).thenReturn(
-            Single.just(
-                arrayOf(
-                    Character(name = "SpiderMan", id = 0),
-                    Character(name = "Hulk", id = 1),
-                    Character(name = "Tor", id = 2)
-                )
-            ).delay(10, TimeUnit.SECONDS)
+        `when`(interactor.getCharactersLoadEventHandler()).thenReturn(Observable.just(CharacterLoadEvent.LOAD_STARTED))
+        val list = TestPageList.get<Character>(
+            listOf(
+                Character(name = "SpiderMan", id = 1),
+                Character(name = "Hulk", id = 2),
+                Character(name = "Tor", id = 3)
+            )
         )
+
+        `when`(interactor.getCharacters()).thenReturn(list)
+
         vm.fetchCharacters()
-        Assert.assertEquals(vm.loaderVisibility.get(), ViewVisibility.VISIBLE)
+        Assert.assertEquals(ViewVisibility.VISIBLE, vm.loaderVisibility.get())
     }
 
     @Test
     fun should_hide_progress_when_network_error_occurred() {
         `when`(connectivityChecker.isOffline()).thenReturn(true)
-        `when`(interactor.getCharacters()).thenReturn(Single.error(Throwable()))
+        `when`(interactor.getCharactersLoadEventHandler()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.ERROR)
+                emitter.onNext(CharacterLoadEvent.LOADED)
+            }
+        }
 
         vm.fetchCharacters()
 
-        Assert.assertEquals(vm.loaderVisibility.get(), ViewVisibility.GONE)
+        Assert.assertEquals(ViewVisibility.GONE, vm.loaderVisibility.get())
     }
 
     @Test
     fun should_hide_progress_when_general_error_occurred() {
         `when`(connectivityChecker.isOffline()).thenReturn(false)
-        `when`(interactor.getCharacters()).thenReturn(Single.error(Throwable()))
+        `when`(interactor.getCharactersLoadEventHandler()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.ERROR)
+                emitter.onNext(CharacterLoadEvent.LOADED)
+            }
+        }
 
         vm.fetchCharacters()
 
-        Assert.assertEquals(vm.loaderVisibility.get(), ViewVisibility.GONE)
+        Assert.assertEquals(ViewVisibility.GONE, vm.loaderVisibility.get())
     }
 
     @Test
     fun should_hide_progress_when_character_data_loaded() {
-        `when`(interactor.getCharacters()).thenReturn(
-            Single.just(
-                arrayOf(
-                    Character(name = "SpiderMan", id = 1),
-                    Character(name = "Hulk", id = 2),
-                    Character(name = "Tor", id = 3)
-                )
+        `when`(interactor.getCharactersLoadEventHandler()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.LOAD_STARTED)
+                emitter.onNext(CharacterLoadEvent.LOADED)
+            }
+        }
+        val list = TestPageList.get<Character>(
+            listOf(
+                Character(name = "SpiderMan", id = 1),
+                Character(name = "Hulk", id = 2),
+                Character(name = "Tor", id = 3)
             )
         )
+        `when`(interactor.getCharacters()).thenReturn(list)
+
         vm.fetchCharacters()
-        Assert.assertEquals(vm.loaderVisibility.get(), ViewVisibility.GONE)
+        Assert.assertEquals(ViewVisibility.GONE, vm.loaderVisibility.get())
     }
 
     @Test
     fun should_hide_error_when_loading_started() {
-        `when`(interactor.getCharacters()).thenReturn(
-            Single.just(
-                arrayOf(
-                    Character(name = "SpiderMan", id = 1),
-                    Character(name = "Hulk", id = 2),
-                    Character(name = "Tor", id = 3)
-                )
+        `when`(interactor.getCharactersLoadEventHandler()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.LOAD_STARTED)
+            }
+        }
+        val list = TestPageList.get<Character>(
+            listOf(
+                Character(name = "SpiderMan", id = 1),
+                Character(name = "Hulk", id = 2),
+                Character(name = "Tor", id = 3)
             )
         )
+        `when`(interactor.getCharacters()).thenReturn(list)
+
         vm.fetchCharacters()
-        Assert.assertEquals(vm.error.get(), null)
+
+        Assert.assertEquals(null, vm.error.get())
     }
 }
