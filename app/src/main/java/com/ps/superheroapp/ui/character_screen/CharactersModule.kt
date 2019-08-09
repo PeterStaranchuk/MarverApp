@@ -4,12 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.aximetria.aximetria.di.view_model.DaggerViewModelFactory
 import com.aximetria.aximetria.di.view_model.ViewModelKeyAnnotation
+import com.ps.superheroapp.di.modules.CharactersPageModule
 import com.ps.superheroapp.di.modules.SuperHeroApiModule
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
 
-@Module(includes = [SuperHeroApiModule::class])
+@Module(includes = [SuperHeroApiModule::class, CharactersPageModule::class])
 abstract class CharactersModule {
 
     @Binds
@@ -22,4 +23,6 @@ abstract class CharactersModule {
 
     @Binds
     abstract fun provideInteractor(kotlinViewModelFactory: CharactersInteractorImpl): CharactersContract.Interactor
+
+
 }
