@@ -67,7 +67,7 @@ class CharactersScreenTest {
     @Test
     fun should_show_network_error_when_screen_data_cannot_be_loaded_because_of_internet_connection() {
         `when`(connectivityChecker.isOffline()).thenReturn(true)
-        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.ERROR))
+        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.INITIAL_LOAD_FAILED))
         `when`(interactor.getCharacters()).then {
             TestPageList.get<Character>(listOf())
         }
@@ -80,7 +80,7 @@ class CharactersScreenTest {
     @Test
     fun should_show_general_error_when_screen_data_cannot_be_loaded_because_of_unknown_error() {
         `when`(connectivityChecker.isOffline()).thenReturn(false)
-        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.ERROR))
+        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.INITIAL_LOAD_FAILED))
 
         vm.fetchCharacters()
         Assert.assertEquals(ErrorType.GENERAL, vm.error.get())
@@ -134,7 +134,7 @@ class CharactersScreenTest {
         `when`(connectivityChecker.isOffline()).thenReturn(true)
         `when`(interactor.observeCharactersLoadEvents()).then {
             Observable.create<CharacterLoadEvent> { emitter ->
-                emitter.onNext(CharacterLoadEvent.ERROR)
+                emitter.onNext(CharacterLoadEvent.INITIAL_LOAD_FAILED)
                 emitter.onNext(CharacterLoadEvent.LOADED)
             }
         }
@@ -149,7 +149,7 @@ class CharactersScreenTest {
         `when`(connectivityChecker.isOffline()).thenReturn(false)
         `when`(interactor.observeCharactersLoadEvents()).then {
             Observable.create<CharacterLoadEvent> { emitter ->
-                emitter.onNext(CharacterLoadEvent.ERROR)
+                emitter.onNext(CharacterLoadEvent.INITIAL_LOAD_FAILED)
                 emitter.onNext(CharacterLoadEvent.LOADED)
             }
         }
@@ -200,4 +200,132 @@ class CharactersScreenTest {
 
         Assert.assertEquals(null, vm.error.get())
     }
+
+    @Test
+    fun should_show_bottom_load_indicator_when_next_page_loading() {
+        `when`(interactor.observeCharactersLoadEvents()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.NEXT_PAGE_LOAD_STARTED)
+            }
+        }
+        val list = TestPageList.get<Character>(
+            listOf(
+                Character(name = "SpiderMan", id = 1),
+                Character(name = "Hulk", id = 2),
+                Character(name = "Tor", id = 3)
+            )
+        )
+        `when`(interactor.getCharacters()).thenReturn(list)
+        vm.fetchCharacters()
+        Assert.assertEquals(ViewVisibility.VISIBLE, vm.nextPageLoaderVisibility.get())
+    }
+
+    @Test
+    fun should_hide_error_when_next_page_load_started() {
+        `when`(interactor.observeCharactersLoadEvents()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.NEXT_PAGE_LOAD_STARTED)
+            }
+        }
+        val list = TestPageList.get<Character>(
+            listOf(
+                Character(name = "SpiderMan", id = 1),
+                Character(name = "Hulk", id = 2),
+                Character(name = "Tor", id = 3)
+            )
+        )
+        `when`(interactor.getCharacters()).thenReturn(list)
+        vm.fetchCharacters()
+
+        Assert.assertEquals(null, vm.error.get())
+    }
+
+    @Test
+    fun should_hide_bottom_loader_and_show_try_again_if_new_page_not_loaded_because_of_network_error() {
+        `when`(connectivityChecker.isOffline()).thenReturn(true)
+
+        `when`(interactor.observeCharactersLoadEvents()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.NEXT_PAGE_LOAD_STARTED)
+                emitter.onNext(CharacterLoadEvent.NEXT_PAGE_LOAD_FAILED)
+            }
+        }
+        val list = TestPageList.get<Character>(
+            listOf(
+                Character(name = "SpiderMan", id = 1),
+                Character(name = "Hulk", id = 2),
+                Character(name = "Tor", id = 3)
+            )
+        )
+        `when`(interactor.getCharacters()).thenReturn(list)
+        vm.fetchCharacters()
+
+        Assert.assertEquals(ViewVisibility.VISIBLE, vm.tryAgainVisibility.get())
+    }
+
+    @Test
+    fun should_hide_bottom_loader_and_show_try_again_if_new_page_not_loaded_because_of_general_error() {
+        `when`(connectivityChecker.isOffline()).thenReturn(false)
+
+        `when`(interactor.observeCharactersLoadEvents()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.NEXT_PAGE_LOAD_STARTED)
+                emitter.onNext(CharacterLoadEvent.NEXT_PAGE_LOAD_FAILED)
+            }
+        }
+        val list = TestPageList.get<Character>(
+            listOf(
+                Character(name = "SpiderMan", id = 1),
+                Character(name = "Hulk", id = 2),
+                Character(name = "Tor", id = 3)
+            )
+        )
+        `when`(interactor.getCharacters()).thenReturn(list)
+        vm.fetchCharacters()
+
+        Assert.assertEquals(ViewVisibility.VISIBLE, vm.tryAgainVisibility.get())
+    }
+
+    @Test
+    fun should_hide_try_again_state_if_user_pressed_try_again() {
+        `when`(interactor.observeCharactersLoadEvents()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.NEXT_PAGE_LOAD_STARTED)
+            }
+        }
+        val list = TestPageList.get<Character>(
+            listOf(
+                Character(name = "SpiderMan", id = 1),
+                Character(name = "Hulk", id = 2),
+                Character(name = "Tor", id = 3)
+            )
+        )
+        `when`(interactor.getCharacters()).thenReturn(list)
+
+        vm.onTryAgainPressed()
+
+        Assert.assertEquals(ViewVisibility.GONE, vm.tryAgainVisibility.get())
+    }
+
+    @Test
+    fun should_load_new_page_again_if_user_pressed_try_again() {
+        `when`(interactor.observeCharactersLoadEvents()).then {
+            Observable.create<CharacterLoadEvent> { emitter ->
+                emitter.onNext(CharacterLoadEvent.NEXT_PAGE_LOAD_STARTED)
+            }
+        }
+        val list = TestPageList.get<Character>(
+            listOf(
+                Character(name = "SpiderMan", id = 1),
+                Character(name = "Hulk", id = 2),
+                Character(name = "Tor", id = 3)
+            )
+        )
+        `when`(interactor.getCharacters()).thenReturn(list)
+
+        vm.onTryAgainPressed()
+
+        Mockito.verify(interactor, times(1)).getCharacters()
+    }
+
 }
