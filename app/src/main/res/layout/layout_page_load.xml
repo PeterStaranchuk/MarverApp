@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="loaderVisibility"
+            type="com.ps.superheroapp.objects.ViewVisibility" />
+
+        <variable
+            name="vm"
+            type="com.ps.superheroapp.objects.RestorableLoadViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{loaderVisibility}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/error_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingStart="48dp"
+            android:paddingEnd="48dp"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:visibility="@{vm.tryAgainVisibility}"
+            app:error="@{vm.error}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/try_again"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/holo_blue_dark"
+            android:onClick="@{() -> vm.onTryAgainPressed()}"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/try_again"
+            android:textColor="@android:color/white"
+            android:visibility="@{vm.tryAgainVisibility}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/error_description" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
