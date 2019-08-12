@@ -37,7 +37,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe_to_refresh"
             android:layout_width="0dp"
@@ -55,13 +54,15 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="@{vm.loaderVisibility}"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <include
+            layout="@layout/layout_page_load"
+            android:layout_width="0dp"
             app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:loaderVisibility = "@{vm.loaderVisibility}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:vm = "@{vm}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

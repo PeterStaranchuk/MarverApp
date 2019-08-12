@@ -29,7 +29,7 @@ class CharactersDataSource(
                 callback.onResult(it.data.results ?: arrayListOf(), 0)
                 onEvent.onNext(CharacterLoadEvent.LOADED)
             }, {
-                onEvent.onNext(CharacterLoadEvent.ERROR)
+                onEvent.onNext(CharacterLoadEvent.INITIAL_LOAD_FAILED)
             })
         )
     }
@@ -45,7 +45,7 @@ class CharactersDataSource(
                     callback.onResult(it.data.results ?: arrayListOf())
                     onEvent.onNext(CharacterLoadEvent.LOADED)
                 }, {
-                    onEvent.onNext(CharacterLoadEvent.ERROR)
+                    onEvent.onNext(CharacterLoadEvent.NEXT_PAGE_LOAD_FAILED)
                 })
         )
     }

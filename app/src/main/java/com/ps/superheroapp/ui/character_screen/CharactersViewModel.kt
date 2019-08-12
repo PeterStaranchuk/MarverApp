@@ -4,7 +4,6 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
 import com.ps.superheroapp.objects.*
 import com.ps.superheroapp.ui.character_screen.list.Character
@@ -14,16 +13,16 @@ import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 class CharactersViewModel @Inject constructor(
-    private val interactor: CharactersContract.Interactor,
-    private val connectivityChecker: ConnectivityChecker,
-    private val disposable: CompositeDisposable
-) : ViewModel() {
+        private val interactor: CharactersContract.Interactor,
+        private val connectivityChecker: ConnectivityChecker,
+        private val disposable: CompositeDisposable
+) : RestorableLoadViewModel() {
 
     private val onScreen = PublishSubject.create<Screen>()
     val searchQuery = MutableLiveData<String>()
     private val characters = MutableLiveData<PagedList<Character>>()
-    val error = ObservableField<ErrorType>()
     val loaderVisibility = ObservableField(ViewVisibility.VISIBLE)
+    val nextPageLoaderVisibility = ObservableField(ViewVisibility.GONE)
 
     private val filterCharactersObserver = Observer<String> {
         fetchCharacters()
@@ -40,10 +39,21 @@ class CharactersViewModel @Inject constructor(
                 when (event) {
                     CharacterLoadEvent.INITIAL_LOAD_STARTED -> initialLoadStarted()
                     CharacterLoadEvent.LOADED -> loadFinished()
-                    CharacterLoadEvent.ERROR -> handleError()
+                    CharacterLoadEvent.INITIAL_LOAD_FAILED -> handleError()
+                    CharacterLoadEvent.NEXT_PAGE_LOAD_STARTED -> nextPageLoadStarted()
+                    CharacterLoadEvent.NEXT_PAGE_LOAD_FAILED -> nextPageLoadFailed()
                 }
             }
         })
+    }
+
+    private fun nextPageLoadFailed() {
+        tryAgainVisibility.set(ViewVisibility.VISIBLE)
+    }
+
+    private fun nextPageLoadStarted() {
+        clearError()
+        nextPageLoaderVisibility.set(ViewVisibility.VISIBLE)
     }
 
     private fun handleError() {
@@ -69,8 +79,16 @@ class CharactersViewModel @Inject constructor(
     }
 
     private fun initialLoadStarted() {
-        error.set(null)
+        clearError()
         loaderVisibility.set(ViewVisibility.VISIBLE)
+    }
+
+    private fun clearError() {
+        error.set(null)
+    }
+
+    override fun performTryAgainAction() {
+        fetchCharacters()
     }
 
     override fun onCleared() {
