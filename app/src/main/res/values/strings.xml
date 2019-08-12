@@ -2,4 +2,7 @@
     <string name="app_name">SuperHeroApp</string>
     <string name="characters_screen_toolbar_title">Characters list</string>
     <string name="characters_screen_search_hint">Enter character name</string>
+    <string name="page_load_failed_error_network" formatted="true">Cannot load data. Please check internet connection and try again.</string>
+    <string name="page_load_failed_error_general" formatted="true">Something went wrong. Please try again later.</string>
+    <string name="try_again">Try again</string>
 </resources>
