@@ -38,7 +38,7 @@ class CharactersViewModel @Inject constructor(
         disposable.add(interactor.observeCharactersLoadEvents().subscribe {
             it?.let { event ->
                 when (event) {
-                    CharacterLoadEvent.LOAD_STARTED -> loadStarted()
+                    CharacterLoadEvent.INITIAL_LOAD_STARTED -> initialLoadStarted()
                     CharacterLoadEvent.LOADED -> loadFinished()
                     CharacterLoadEvent.ERROR -> handleError()
                 }
@@ -68,7 +68,7 @@ class CharactersViewModel @Inject constructor(
         loaderVisibility.set(ViewVisibility.GONE)
     }
 
-    private fun loadStarted() {
+    private fun initialLoadStarted() {
         error.set(null)
         loaderVisibility.set(ViewVisibility.VISIBLE)
     }

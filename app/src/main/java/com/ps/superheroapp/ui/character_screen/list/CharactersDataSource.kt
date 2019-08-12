@@ -23,7 +23,7 @@ class CharactersDataSource(
         compositeDisposable.add(marvelApi.searchCharacter(params.pageSize, 0, filter.searchQuery)
             .observeOn(scheduler)
             .doOnSubscribe {
-                onEvent.onNext(CharacterLoadEvent.LOAD_STARTED)
+                onEvent.onNext(CharacterLoadEvent.INITIAL_LOAD_STARTED)
             }
             .subscribe({
                 callback.onResult(it.data.results ?: arrayListOf(), 0)
@@ -39,7 +39,7 @@ class CharactersDataSource(
             marvelApi.searchCharacter(params.loadSize, params.startPosition, filter.searchQuery)
                 .observeOn(scheduler)
                 .doOnSubscribe {
-                    onEvent.onNext(CharacterLoadEvent.LOAD_STARTED)
+                    onEvent.onNext(CharacterLoadEvent.NEXT_PAGE_LOAD_STARTED)
                 }
                 .subscribe({
                     callback.onResult(it.data.results ?: arrayListOf())

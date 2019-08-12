@@ -45,7 +45,7 @@ class CharactersScreenTest {
     fun should_show_list_of_characters_when_screen_started() {
         `when`(interactor.observeCharactersLoadEvents()).then {
             Observable.create<CharacterLoadEvent> { emitter ->
-                emitter.onNext(CharacterLoadEvent.LOAD_STARTED)
+                emitter.onNext(CharacterLoadEvent.INITIAL_LOAD_STARTED)
                 emitter.onNext(CharacterLoadEvent.LOADED)
             }
         }
@@ -88,7 +88,7 @@ class CharactersScreenTest {
 
     @Test
     fun should_filter_character_list_when_user_enter_text_in_search_field() {
-        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.LOAD_STARTED))
+        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.INITIAL_LOAD_STARTED))
         `when`(interactor.getCharacters()).then {
             TestPageList.get<Character>(listOf())
         }
@@ -114,7 +114,7 @@ class CharactersScreenTest {
 
     @Test
     fun should_show_progress_bar_when_character_list_loading() {
-        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.LOAD_STARTED))
+        `when`(interactor.observeCharactersLoadEvents()).thenReturn(Observable.just(CharacterLoadEvent.INITIAL_LOAD_STARTED))
         val list = TestPageList.get<Character>(
             listOf(
                 Character(name = "SpiderMan", id = 1),
@@ -163,7 +163,7 @@ class CharactersScreenTest {
     fun should_hide_progress_when_character_data_loaded() {
         `when`(interactor.observeCharactersLoadEvents()).then {
             Observable.create<CharacterLoadEvent> { emitter ->
-                emitter.onNext(CharacterLoadEvent.LOAD_STARTED)
+                emitter.onNext(CharacterLoadEvent.INITIAL_LOAD_STARTED)
                 emitter.onNext(CharacterLoadEvent.LOADED)
             }
         }
@@ -184,7 +184,7 @@ class CharactersScreenTest {
     fun should_hide_error_when_loading_started() {
         `when`(interactor.observeCharactersLoadEvents()).then {
             Observable.create<CharacterLoadEvent> { emitter ->
-                emitter.onNext(CharacterLoadEvent.LOAD_STARTED)
+                emitter.onNext(CharacterLoadEvent.INITIAL_LOAD_STARTED)
             }
         }
         val list = TestPageList.get<Character>(
